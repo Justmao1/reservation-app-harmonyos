@@ -28,7 +28,7 @@ export default struct Home { //导出,以便其它组件导入复用
       '2024-5-18')
   ]
    //声明远程服务器地址
-  private serverUrl: string = 'http://192.168.43.5:3000/';
+  private serverUrl: string = 'http://192.168.5.7:3000/';
   ////初始化数据////
  aboutToAppear():void{
     ////获取json-server服务器的数据/////

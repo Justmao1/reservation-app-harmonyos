@@ -1,5 +1,5 @@
-//导入公共的类
 import Msg from '../../entity/News';
+
 /**
  * 场馆动态组件
  */
@@ -7,23 +7,42 @@ import Msg from '../../entity/News';
 @Component
 export default struct Message {
   @State message: string = '场馆动态'
-  //用于动态显示返回按钮
-  // @State flag: Visibility = Visibility.Hidden
-  //测试数据
-  private common: string = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi cupiditate esse nulla, eveniet dicta, quos blanditiis facere laborum id obcaecati consequuntur porro.';
-  //声明对象数组
+
   private msgs: Array<Msg> = [
-    new Msg("play5", "优天地的网球馆已重新开放啦，场外扫码自助管理，方便快捷", "因静安网球馆前台系统升级" + this.common, "2024-5-22"),
-    new Msg("play2", "公告 | 羽毛球场恢复对外开放通知", "羽毛球馆重新开放" + this.common, "2024-5-20"),
-    new Msg("play4", "喜欢乒乓球的伙伴们注意啦，请提前预订，一分钟搞定", "乒乓球" + this.common, "2024-5-20"),
-    new Msg("play1", "通知 | 明晚社区将举办足球友谊赛，敬请报名观看", "足球比赛" + this.common, "2024-5-18"),
-    new Msg("play3", "生活广场篮球场地暂时关闭，开放时间待通知", "篮球场因为" + this.common, "2024-5-16")
+    new Msg(
+      'play5',
+      '优天地网球馆重新开放，场外扫码自助入场',
+      '网球馆前台系统升级已完成。用户可通过预约码核验入场，场外扫码完成签到，减少排队等待时间。',
+      '2024-5-22'
+    ),
+    new Msg(
+      'play2',
+      '公告 | 羽毛球场恢复对外开放通知',
+      '羽毛球馆照明与地胶维护已结束，今日起恢复预约。请按预约时段到场，运动前做好热身。',
+      '2024-5-20'
+    ),
+    new Msg(
+      'play4',
+      '乒乓球场预约开放，请提前锁定时段',
+      '乒乓球区晚间时段较为热门，建议提前预约。到场后请出示预约信息，由工作人员核验入场。',
+      '2024-5-20'
+    ),
+    new Msg(
+      'play1',
+      '通知 | 明晚社区足球友谊赛开放报名',
+      '社区足球友谊赛将于明晚举行，欢迎足球爱好者报名参与。名额有限，报名成功后请准时到场。',
+      '2024-5-18'
+    ),
+    new Msg(
+      'play3',
+      '篮球场临时维护，开放时间另行通知',
+      '生活广场篮球场正在进行篮架与地面维护，维护期间暂停预约。恢复开放后将第一时间发布通知。',
+      '2024-5-16'
+    )
   ]
 
-  ////构建UI页面
   build() {
     Column() {
-      //1.顶部
       Row() {
         Text('<')
           .width('10%')
@@ -32,8 +51,7 @@ export default struct Message {
           .fontSize(30)
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)
-          //  .visibility(this.flag) //根据路由传参动态设置
-          .onClick(() => { //返回
+          .onClick(() => {
             this.getUIContext().getRouter().back();
           })
         Text(this.message)
@@ -43,50 +61,60 @@ export default struct Message {
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)
           .textAlign(TextAlign.Center)
-          .padding({right:36})
-      }.width('100%')
+          .padding({ right: 36 })
+      }
+      .width('100%')
       .height('12%')
       .backgroundColor('#27C189')
-      //2.动态列表
-      List({ space: 10 }) {
+
+      List({ space: 12 }) {
         ForEach(this.msgs, (item: Msg) => {
           ListItem() {
-            Column() { //嵌套列
-              //标题
-              Text(item.title).fontSize(20).fontWeight(FontWeight.Bold)
+            Column() {
+              Text(item.title)
+                .fontSize(20)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#222')
                 .margin({ bottom: 10 })
-              //图文
-              Row() {//'imgs/yuyue/'
-                Image($rawfile(`imgs/yuyue/`+item.pic+`.jpg`)).width(100).height(80)
-                  .margin({ right: 4 }).borderRadius(8)
+                .width('100%')
+
+              Row() {
+                Image($rawfile(`imgs/yuyue/` + item.pic + `.jpg`))
+                  .width(105)
+                  .height(82)
+                  .margin({ right: 8 })
+                  .borderRadius(8)
+                  .objectFit(ImageFit.Cover)
                 Text(item.info)
-                  .height(80)
-                  .width(220)
+                  .height(82)
+                  .layoutWeight(1)
                   .fontSize(18)
                   .fontColor('#555')
-                  .textOverflow({ overflow: TextOverflow.Clip })
-                  .borderRadius(8)
-                  .padding({ right: 10 })
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .maxLines(4)
                   .align(Alignment.TopStart)
               }
-              //发布日期
-              Text(item.date).width('100%').fontColor(Color.Grey).margin({ top: 8 })
+              .width('100%')
+
+              Text(item.date)
+                .width('100%')
+                .fontColor(Color.Grey)
+                .margin({ top: 8 })
             }
           }
           .backgroundColor('#fff')
           .borderRadius(10)
-          .padding(10).onClick(()=>{//去场馆消息
-            //路由对象切换并传参，参数中所有属性的值都必须是字符串，如果不是字符串是一个对象则需要通过JSON.stringify(对象名)
-            //将对象转换类为json字符串
-            this.getUIContext().getRouter().pushUrl({url:'pages/common/MyDetail',params:{title:'场馆动态',jsonstr:JSON.stringify(item)}})
+          .padding(10)
+          .onClick(() => {
+            this.getUIContext().getRouter().pushUrl({
+              url: 'pages/common/MyDetail',
+              params: { title: '场馆动态', jsonstr: JSON.stringify(item) }
+            })
           })
         })
-        ////list-end
       }
       .width('94%')
-      .height('100%') //填充剩余的所有
-      //不加布局权重,无法滑动
+      .height('100%')
       .layoutWeight(1)
       .listDirection(Axis.Vertical)
       .margin({ top: 8 })

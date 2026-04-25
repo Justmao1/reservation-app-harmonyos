@@ -23,7 +23,9 @@ function go() {
 @Component
 export default struct Mine {
   @State message: string = "您今天没有预约哦~";
-  @State username: string = ''; //调用函数
+  @StorageLink('username') username: string = ''; //调用函数
+  @StorageLink('mobile') mobile: string = '';
+  @StorageLink('avatar') avatar: string = 'myback.png';
   //隐藏或显示预约按钮
   @State flag1: Visibility = Visibility.Visible;
   //隐藏或显示出示二维码接钮
@@ -37,6 +39,35 @@ export default struct Mine {
   @State loginColor: string = '#fff';
   ////导航路径栈,官方建议通过Navigation实现跳转,用于替代router,进阶课程将全面应用它///
   private navpath: NavPathStack = new NavPathStack();
+
+  @Builder
+  buildMenuItem(title: string, desc: string, color: string, action: () => void) {
+    Row() {
+      Column() {
+        Text(title)
+          .fontSize(20)
+          .fontWeight(FontWeight.Medium)
+          .fontColor('#333')
+        Text(desc)
+          .fontSize(13)
+          .fontColor('#999')
+          .margin({ top: 4 })
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      Text('>')
+        .fontSize(22)
+        .fontWeight(FontWeight.Bold)
+        .fontColor(color)
+        .width(28)
+        .textAlign(TextAlign.End)
+    }
+    .width('100%')
+    .padding({ left: 18, right: 18, top: 15, bottom: 15 })
+    .backgroundColor(Color.White)
+    .onClick(action)
+  }
 
   //Navigation导航组件，要求声明切换到目标页面的函数
   @Builder
@@ -53,14 +84,13 @@ export default struct Mine {
     //取已登录过的用户
     this.username = go();
     //获取登录用户的手机号,以便获得报名信息
-    let mobile = AppStorage.get<string>('mobile') as string;
     if (this.username != '') {
       this.login = "用户退出"
       this.loginColor = '#fcc';
-      if (mobile != undefined) {
+      if (this.mobile != undefined) {
         ////修改为通过http请示：查询json-server服务器拿到数据////
         //查询内置SQLite数据库,用户所有的预约信息,注意此下的调用方式
-        PlayerDao.queryAll(mobile).then((data) => {
+        PlayerDao.queryAll(this.mobile).then((data) => {
           if (data.length > 0) { //直接将数据提供给UI
             for (let i = 0; i < data.length; i++) {
               if (data[i].state == '进行中') {
@@ -116,73 +146,106 @@ export default struct Mine {
         .zIndex(88)
         .visibility(this.qcflag);
 
-        ////再包一个列,当切换方向时确保子组件整体居中////
         Column() {
-          ////顶部注册////
-          Row() { //一行左边的
-            Button()
-              .backgroundColor(Color.Transparent)
-              .backgroundImage($r('app.media.my_index'))
-              .backgroundImagePosition(Alignment.Center)
-              .width(60)
-              .height(60)
-              .margin({ right: 20, left: -20 })
-              .onClick(() => { //跳转为首页,日志提示有未定义数据
-                //路由跳转切换到主页
-                this.getUIContext().getRouter().pushUrl({ url: 'pages/Index' })
+          Row() {
+            Image($rawfile(`imgs/yuyue/${this.avatar == '' ? 'myback.png' : this.avatar}`))
+              .width(72)
+              .height(72)
+              .borderRadius(36)
+              .objectFit(ImageFit.Cover)
+              .border({ width: 4, color: '#E9FFF7' })
+              .margin({ right: 16 })
+              .onClick(() => {
+                if (this.username != '') {
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Update' })
+                }
               })
-            //注册与登录
+
             Column() {
-              Text(this.username + '欢迎光临')
+              Text(this.username == '' ? '欢迎使用健身预约' : this.username)
                 .fontColor(Color.White)
-                .fontSize(30)
+                .fontSize(27)
                 .fontWeight(FontWeight.Bold)
-                .margin({ top: 10, left: -19 })
-              Button('没有账号，马上注册').margin({ top: 15 }).fontSize(18).backgroundColor(Color.Grey)
-                .onClick(() => {
-                  //路由跳转切换页面
-                  this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Register' })
-                })
-              Button(this.login)
-                .fontSize(20)
-                .fontWeight(FontWeight.Bold)
-                .margin({ top: 10 })
-                .backgroundColor(Color.Transparent)
-                .offset({ x: 75 })
-                .fontColor(this.loginColor)
-                .onClick(() => {
-                  if (this.login == '用户登录') { //登录
-                    this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Login' })
-                  } else {
-                    ////重置为初始状态
-                    this.username = '';
-                    this.login = '用户登录';
-                    this.loginColor = '#fff';
-                    ////清二维码
-                    this.message = '您今天没有预约哦！';
-                    this.flag1 = Visibility.Visible;
-                    this.flag2 = Visibility.None;
-                    ////清除编存,重置
-                    AppStorage.clear();
-                  }
-                });
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text(this.username == '' ? '登录后查看预约和个人资料' : '欢迎回来，今天也动起来')
+                .fontColor('#E9FFF7')
+                .fontSize(14)
+                .margin({ top: 8 })
             }
-          }.backgroundColor('#27C189')
-          .alignSelf(ItemAlign.Center)
-          .height('26%')
-        }.width('100%').backgroundColor('#27C189');
+            .layoutWeight(1)
+            .alignItems(HorizontalAlign.Start)
+          }
+          .width('100%')
+          .padding({ left: 24, right: 24, top: 42 })
+
+          Row() {
+            Button(this.username == '' ? '用户登录' : '用户退出')
+              .fontSize(16)
+              .fontWeight(FontWeight.Bold)
+              .fontColor(this.username == '' ? '#27C189' : '#C43A3A')
+              .backgroundColor(Color.White)
+              .height(38)
+              .borderRadius(19)
+              .onClick(() => {
+                if (this.username == '') {
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Login' })
+                } else {
+                  this.username = '';
+                  this.message = '您今天没有预约哦！';
+                  this.flag1 = Visibility.Visible;
+                  this.flag2 = Visibility.None;
+                  AppStorage.clear();
+                }
+              })
+            Button('马上注册')
+              .fontSize(16)
+              .fontColor(Color.White)
+              .backgroundColor('rgba(255,255,255,0.22)')
+              .height(38)
+              .borderRadius(19)
+              .margin({ left: 12 })
+              .visibility(this.username == '' ? Visibility.Visible : Visibility.None)
+              .onClick(() => {
+                this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Register' })
+              })
+          }
+          .width('100%')
+          .padding({ left: 24, right: 24, top: 18 })
+        }
+        .width('100%')
+        .height('28%')
+        .backgroundColor('#27C189');
 
         ////1.今日预约
         Column() {
-          Text('今日预约').fontSize(26).fontWeight(FontWeight.Bold).margin({ left: 20 })
+          Row() {
+            Text('今日预约')
+              .fontSize(22)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#222')
+              .layoutWeight(1)
+            Text(this.flag2 == Visibility.Visible ? '进行中' : '暂无预约')
+              .fontSize(14)
+              .fontColor(this.flag2 == Visibility.Visible ? '#27C189' : '#999')
+              .backgroundColor(this.flag2 == Visibility.Visible ? '#E9FFF7' : '#F2F2F2')
+              .borderRadius(12)
+              .padding({ left: 10, right: 10, top: 4, bottom: 4 })
+          }
+          .width('100%')
           Row() {
             //提示信息
-            Text(this.message).fontSize(20).fontColor(Color.Grey).margin({ left: 20 })
+            Text(this.message)
+              .fontSize(18)
+              .fontColor('#666')
+              .layoutWeight(1)
             //去预约
             Button('马上预约')
-              .backgroundColor(Color.Transparent)
-              .fontSize(18)
-              .fontColor(Color.Red)
+              .backgroundColor('#FFF3F3')
+              .fontSize(15)
+              .fontColor('#D93030')
+              .height(34)
+              .borderRadius(17)
               .onClick(() => {
                 if (this.username == null || this.username == undefined || this.username == '') {
                   AlertDialog.show({ title: '登录提示', message: '请您先登录后再进行修改!' })
@@ -195,53 +258,37 @@ export default struct Mine {
               .visibility(this.flag1);
             //生成二维码
             Button('出示二维码')
-              .backgroundColor(Color.Transparent)
-              .fontSize(18)
+              .backgroundColor('#E9FFF7')
+              .fontSize(15)
               .fontColor('#27C189')
+              .height(34)
+              .borderRadius(17)
               .visibility(this.flag2)
               .onClick(() => {
                 this.qcflag = Visibility.Visible;
               })
             //直接生成二维码
-          }.margin({ top: 20 })
+          }.margin({ top: 18 }).width('100%')
         }
         .width('92%')
-        .height('18%')
+        .height('15%')
         .backgroundColor(Color.White)
-        .borderRadius(10)
-        .margin({ top: 10 })
+        .borderRadius(12)
+        .margin({ top: -18 })
+        .padding(18)
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Start)
 
-        ////2.所有预约
         Column() {
-          Row() {
-            Text('我的所有预约').fontSize(22).fontColor('#666').width('80%')
-            Button('>')
-              .backgroundColor(Color.Transparent)
-              .fontColor('#27C189')
-              .fontSize(24)
-              .width('20%')
-          }.width('100%').padding({ left: 20 })
-          .onClick(() => {
+          this.buildMenuItem('我的所有预约', '查看全部预约记录和状态', '#27C189', () => {
             if (this.username == '' || this.username == null || this.username == undefined) {
               AlertDialog.show({ title: '查询提示', message: '请先登录后再查询！' })
             } else { //我的报告
               this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Reports' })
             }
           })
-
-          //水平线
-          Divider().margin({ left: 4, top: 18, bottom: 18 }).width('98%')
-          Row() {
-            Text('修改个人资料').fontSize(22).fontColor('#666').width('80%')
-            Button('>')
-              .backgroundColor(Color.Transparent)
-              .fontColor('#27C189')
-              .fontSize(24)
-              .width('20%')
-          }.width('100%').padding({ left: 20 })
-          .onClick(() => {
+          Divider().width('92%').alignSelf(ItemAlign.Center).color('#EEEEEE')
+          this.buildMenuItem('修改个人资料', '更新手机号、密码和头像', '#27C189', () => {
             if (this.username == '' || this.username == undefined) {
               //最的对话框，需要通过上下文对象来取
               this.getUIContext().showAlertDialog({ title: '登录提示', message: '请您先登录后再进行修改!' })
@@ -249,60 +296,31 @@ export default struct Mine {
               this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Update' })
             }
           })
-        }
-        .width('92%')
-        .height('20%')
-        .backgroundColor(Color.White)
-        .borderRadius(10)
-        .margin({ top: 10 })
-        .alignItems(HorizontalAlign.Start)
-        .justifyContent(FlexAlign.Center)
-
-        //关于我们
-        Column() {
-          Row() {
-            Text('关于我们').fontSize(22).fontColor('#666').width('80%')
-            Button('>')
-              .backgroundColor(Color.Transparent)
-              .fontColor('#27C189')
-              .fontSize(24)
-              .width('20%')
-          }.width('100%').padding({ left: 20 })
-          .onClick(() => {
+          Divider().width('92%').alignSelf(ItemAlign.Center).color('#EEEEEE')
+          this.buildMenuItem('关于我们', '了解应用服务和团队信息', '#27C189', () => {
             this.getUIContext().showAlertDialog({
-              title: '超客天涯',
-              message: '致力于新技术的学习与传播，以近于技术，快于成长，贵于交流为宗旨！'
+              title: '健身预约',
+              message: '提供场馆查询、预约报名、个人预约管理等服务，让运动安排更轻松。'
             });
           })
-
-          //水平线
-          Divider().margin({ left: 4, top: 16, bottom: 16 }).width('98%')
-          Row() {
-            Text('Navigation跳转').fontSize(22).fontColor(Color.Brown).width('80%').backgroundColor(Color.White)
-            Button('>')
-              .backgroundColor(Color.Transparent)
-              .fontColor('#27C189')
-              .fontSize(24)
-              .width('20%')
-          }.width('100%').padding({ left: 20 })
-          .onClick(() => {
+          Divider().width('92%').alignSelf(ItemAlign.Center).color('#EEEEEE')
+          this.buildMenuItem('Navigation跳转', '查看导航组件图文说明', '#B12A2A', () => {
             //通过导航组件跳转到下一页TestInfo：组件名,传递参数
             //name的值必须与pageMap方法中定义的name==“名称”中的名称一样
-            this.navpath.pushPath({ name: 'info', param: '你好DeepSeek!' })
+            this.navpath.pushPath({ name: 'info', param: '来自个人中心的导航参数' })
             //或者
             //this.navpath.pushPathByName('Info','你好DeepSeek!');
           })
         }
         .width('92%')
-        .height('20%')
         .backgroundColor(Color.White)
-        .borderRadius(10)
-        .margin({ top: 10 })
+        .borderRadius(12)
+        .margin({ top: 12 })
         .alignItems(HorizontalAlign.Start)
-        .justifyContent(FlexAlign.Center)
       }
       .width('100%')
       .height('100%')
+      .backgroundColor('#F5F7F6')
       .alignSelf(ItemAlign.Center);
       ////目标导航组件设置,传一个跳转方法名,不能带()////
     }.navDestination(this.pageMap)

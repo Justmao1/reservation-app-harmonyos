@@ -18,6 +18,7 @@ class MyReservation {
 @Component
 export default struct Restime {
   @State message: string = '场馆预约';
+  @StorageLink('username') username: string = '';
   //日期选择器
   @State isLunar: boolean = false
   //动态显示返回按钮
@@ -77,7 +78,7 @@ export default struct Restime {
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)
           .textAlign(TextAlign.End)
-        Text('去登录')
+        Text(this.username == '' ? '去登录' : this.username)
           .fontSize(20)
           .width('35%')
           .fontColor(Color.White)
@@ -85,7 +86,9 @@ export default struct Restime {
           .height('100%')
           .padding({ right: 10 })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Login' })
+            if (this.username == '') {
+              this.getUIContext().getRouter().pushUrl({ url: 'pages/mine/Login' })
+            }
           })
       }.width('100%')
       .height('12%')
