@@ -108,6 +108,49 @@ kitty / 1234
 - 手机/模拟器和电脑是否处在同一网络。
 - `db.json` 中用户名和密码是否匹配。
 
+## 任务完成情况说明
+
+### 2、完成鸿蒙 + json-server 的健身预约 App 应用，要求
+
+本项目已完成基于 HarmonyOS ArkTS 的健身预约 App 基础功能，并引入 `json-server` 作为模拟后端服务。App 通过 `@ohos.net.http` 请求 `server/db.json` 中的数据，实现用户注册、登录、用户资料修改以及首页快捷入口数据加载。
+
+后端数据文件位于 [db.json](server/db.json)，HTTP 请求封装位于 [MyHttp.ets](entry/src/main/ets/utils/MyHttp.ets)。运行项目时，需要先启动 json-server 服务，并将 [MyHttp.ets](entry/src/main/ets/utils/MyHttp.ets) 中的 `baseUrl` 修改为当前电脑的局域网 IP。
+
+### （1）完成个人中心的用户资料修改，要使用 http + json + server
+
+该任务已完成。个人中心进入“修改个人资料”页面后，可以修改用户名、手机号和头像。提交时通过 HTTP `PUT /user/:id` 请求更新 json-server 中的用户数据，服务端数据会同步写入 [db.json](server/db.json) 的 `user` 表。
+
+涉及文件：
+
+- [Mine.ets](entry/src/main/ets/pages/mine/Mine.ets)：个人中心页面，展示当前登录用户的头像和用户名，并提供“修改个人资料”入口。
+- [Update.ets](entry/src/main/ets/pages/mine/Update.ets)：用户资料修改页面，支持修改用户名、手机号和头像。
+- [MyHttp.ets](entry/src/main/ets/utils/MyHttp.ets)：封装 HTTP 请求，其中 `updateById` 方法使用 `PUT` 请求更新用户资料。
+- [User.ets](entry/src/main/ets/entity/User.ets)：用户实体类，包含 `username`、`password`、`mobile`、`avatar` 等字段。
+- [db.json](server/db.json)：json-server 数据源，保存用户信息。
+
+完成效果：
+
+- 登录后，“我的”页面能够显示当前用户信息。
+- 点击“修改个人资料”可以进入资料修改页面。
+- 修改用户名、手机号或头像后点击保存，会通过 HTTP 请求更新服务端数据。
+- 修改成功后会同步刷新 AppStorage 中的用户信息，返回个人中心后可以看到最新资料。
+
+### （2）优化并完善个人中心跳转的 TestInfo.ets 组件，要求图文并茂
+
+该任务已完成。`TestInfo.ets` 已从简单测试页面优化为图文结合的信息展示组件，用于承接个人中心中的 Navigation 跳转示例。页面加入了图片、标题、说明文字和跳转参数展示，整体内容更完整，符合“图文并茂”的要求。
+
+涉及文件：
+
+- [Mine.ets](entry/src/main/ets/pages/mine/Mine.ets)：个人中心中提供 `Navigation跳转` 入口，并向 TestInfo 页面传递参数。
+- [TestInfo.ets](entry/src/main/ets/pages/mine/TestInfo.ets)：优化后的图文展示组件，展示图片、说明内容和跳转参数。
+- [main_pages.json](entry/src/main/resources/base/profile/main_pages.json)：页面路由配置文件，包含个人中心相关页面。
+
+完成效果：
+
+- 在“我的”页面点击 `Navigation跳转` 后，可以进入 TestInfo 展示页。
+- TestInfo 页面包含图片展示、文字说明和参数信息，不再是单一文字测试页。
+- 页面视觉效果更完整，能够作为个人中心跳转示例和项目功能说明页面使用。
+
 
 ## 常见问题
 
@@ -125,4 +168,3 @@ http://192.168.x.x:3000/
 ```text
 http://127.0.0.1:3000/
 ```
-
