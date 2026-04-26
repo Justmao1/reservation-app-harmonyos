@@ -108,30 +108,9 @@ kitty / 1234
 - 手机/模拟器和电脑是否处在同一网络。
 - `db.json` 中用户名和密码是否匹配。
 
-## 当前实现状态
-
-已完成：
-
-- 用户注册、登录、资料修改接入 `http + json-server`。
-- 登录成功后返回原页面，不再重复打开新的“我的”页面。
-- 登录状态在“我的”和“预约”页面同步展示。
-- 头像支持默认显示、修改和保存。
-- 首页、场馆动态、场馆预约列表的占位文案已替换为中文内容。
-- 个人中心、登录页、注册页 UI 已优化。
-
-待完善：
-
-- 预约提交目前仍使用本地 `PlayerDao` / `relationalStore`，尚未完全迁移到 `http + json-server`。
-- `server/db.json` 当前还没有独立的预约记录表。
-- 所有预约页暂未实现取消预约。
-- 手机日程、分发到其它设备目前是占位提示功能。
-- 场馆可预约时段、库存和占用状态目前是前端静态展示。
 
 ## 常见问题
 
-### 构建提示 `DEVECO_SDK_HOME` 无效
-
-说明 DevEco Studio SDK 环境变量配置异常。可以在 DevEco Studio 中重新检查 SDK 路径，或按提示执行 `hvigorw --stop-daemon` 后重新构建。
 
 ### 服务端可以打开，但 App 请求失败
 
@@ -147,19 +126,3 @@ http://192.168.x.x:3000/
 http://127.0.0.1:3000/
 ```
 
-### 修改 `db.json` 后数据没有变化
-
-确认 json-server 是否正在使用当前项目的 [db.json](server/db.json)。如果服务未自动刷新，可以停止后重新启动 json-server。
-
-## 开发建议
-
-后续如果要继续完善预约模块，建议新增 `reservations` 表，并在 `MyHttp.ets` 中补充预约相关接口：
-
-```text
-GET    /reservations?mobile=xxx
-POST   /reservations
-DELETE /reservations/:id
-PUT    /reservations/:id
-```
-
-然后将 [Application.ets](entry/src/main/ets/pages/restime/Application.ets) 的提交逻辑和 [Reports.ets](entry/src/main/ets/pages/restime/Reports.ets) 的查询逻辑统一迁移到 HTTP 服务端，这样用户数据和预约数据就都能通过 json-server 管理。
