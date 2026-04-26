@@ -14,9 +14,9 @@ struct Update {
   @State username: string = '';
   @State mobile: string = '';
   @State password: string = '';
-  @State avatar: string = 'myback.png';
+  @State avatar: string = 'play3.jpg';
   @State user: User | null = null;
-  private avatars: string[] = ['myback.png', 'play1.jpg', 'play2.jpg', 'play7.jpg'];
+  private avatars: string[] = ['play3.jpg', 'play1.jpg', 'play2.jpg', 'play7.jpg'];
 
   //初始用户信息
   aboutToAppear() {
@@ -26,7 +26,7 @@ struct Update {
       this.username = this.user.username;
       this.password = this.user.password;
       this.mobile = this.user.mobile;
-      this.avatar = this.user.avatar != undefined && this.user.avatar != '' ? this.user.avatar : 'myback.png';
+      this.avatar = this.user.avatar != undefined && this.user.avatar != '' ? this.user.avatar : 'play3.jpg';
     }
   }
 
@@ -149,7 +149,7 @@ struct Update {
               //重新存入缓存
               AppStorage.setOrCreate<string>('username', res.username);
               AppStorage.setOrCreate<string>('mobile', res.mobile);
-              AppStorage.setOrCreate<string>('avatar', res.avatar != undefined && res.avatar != '' ? res.avatar : 'myback.png');
+              AppStorage.setOrCreate<string>('avatar', res.avatar != undefined && res.avatar != '' ? res.avatar : 'play3.jpg');
               AppStorage.setOrCreate<User>('user', res);
               //修改成功直接返回
               AlertDialog.show({ message: '修改成功!' })

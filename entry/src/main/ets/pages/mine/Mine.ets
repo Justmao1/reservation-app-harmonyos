@@ -25,7 +25,7 @@ export default struct Mine {
   @State message: string = "您今天没有预约哦~";
   @StorageLink('username') username: string = ''; //调用函数
   @StorageLink('mobile') mobile: string = '';
-  @StorageLink('avatar') avatar: string = 'myback.png';
+  @StorageLink('avatar') avatar: string = 'play3.jpg';
   //隐藏或显示预约按钮
   @State flag1: Visibility = Visibility.Visible;
   //隐藏或显示出示二维码接钮
@@ -148,7 +148,7 @@ export default struct Mine {
 
         Column() {
           Row() {
-            Image($rawfile(`imgs/yuyue/${this.avatar == '' ? 'myback.png' : this.avatar}`))
+            Image($rawfile(`imgs/yuyue/${this.avatar == '' ? 'play3.jpg' : this.avatar}`))
               .width(72)
               .height(72)
               .borderRadius(36)

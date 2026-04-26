@@ -82,7 +82,7 @@ export default class MyHttp {
           AppStorage.setOrCreate<User>("user", temp);
           AppStorage.setOrCreate<string>("username", temp.username);
           AppStorage.setOrCreate<string>("mobile", temp.mobile);
-          AppStorage.setOrCreate<string>("avatar", temp.avatar != undefined && temp.avatar != '' ? temp.avatar : 'myback.png');
+          AppStorage.setOrCreate<string>("avatar", temp.avatar != undefined && temp.avatar != '' ? temp.avatar : 'play3.jpg');
           resolve('ok')
         } else {
           resolve('用户名或密码有误')
@@ -161,7 +161,7 @@ export default class MyHttp {
         AppStorage.setOrCreate<User>('user', temp);
         AppStorage.setOrCreate<string>('username', temp.username);
         AppStorage.setOrCreate<string>('mobile', temp.mobile);
-        AppStorage.setOrCreate<string>('avatar', temp.avatar != undefined && temp.avatar != '' ? temp.avatar : 'myback.png');
+        AppStorage.setOrCreate<string>('avatar', temp.avatar != undefined && temp.avatar != '' ? temp.avatar : 'play3.jpg');
         resolve(temp);
       })
     })

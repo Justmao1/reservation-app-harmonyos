@@ -11,7 +11,7 @@ export default class User {
   //手机
   mobile: string;
   //头像图片名称，使用 rawfile/imgs/yuyue 下的图片
-  avatar: string = 'myback.png';
+  avatar: string = 'play3.jpg';
   ////通过可选参数方式实现多个构造函数方式,此处id?号可选(表示可以为空)////
   constructor(username: string, password: string, mobile: string, id?: number, avatar?: string) {
     this.username = username;

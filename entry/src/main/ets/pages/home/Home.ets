@@ -116,35 +116,47 @@ export default struct Home { //导出,以便其它组件导入复用
             Row() { //只能有一个组件
               //左边图片'imgs/types/' + item.pic + '.jpg'
               //用模板字符串拼接图片动态路径
-              Image($rawfile(`imgs/types/${item.pic}.jpg`)).width(100).height(120)
+              Image($rawfile(`imgs/types/${item.pic}.jpg`)).width(126).height(126)
                 .borderRadius(8).margin({ right: 8 })
+                .objectFit(ImageFit.Cover)
               Column() {
                 //右边标题
                 Text(item.title)
-                  .width('94%')
-                  .fontSize(24)
+                  .width('100%')
+                  .fontSize(22)
                   .fontWeight(FontWeight.Bold)
-                  .textAlign(TextAlign.Center)
+                  .fontColor('#222')
+                  .textAlign(TextAlign.Start)
                   .maxLines(1) //保证只有一行后设为省略号
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                 //右边内容
                 Text(item.info)
                   .fontSize(16)
-                  .padding({ top: 8 })
+                  .margin({ top: 8 })
                   .fontColor('#555')
                   .textAlign(TextAlign.Start)//水平对齐
-                  .maxLines(3)//最大行数
-                  .textOverflow({ overflow: TextOverflow.Clip })//文本溢出设置为...
+                  .maxLines(2)//最大行数
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })//文本溢出设置为...
                   .align(Alignment.TopStart) //顶部左对齐,Top顶部居中
-                  .width('92%')
-                  .height(68)
+                  .width('100%')
+                  .layoutWeight(1)
                 //发布时间
-                Text(item.date).textAlign(TextAlign.End).width('92%').fontColor(Color.Grey)
+                Text(item.date)
+                  .textAlign(TextAlign.End)
+                  .width('100%')
+                  .fontColor(Color.Grey)
+                  .fontSize(15)
                 ////布局也要设置高宽
-              }.padding({ top: 10, bottom: 10 }) //内间距
-              .justifyContent(FlexAlign.Start)
-              .height('100%')
+              }
+              .layoutWeight(1)
+              .height(126)
+              .justifyContent(FlexAlign.SpaceBetween)
+              .alignItems(HorizontalAlign.Start)
             }
+            .width('100%')
+            .height(146)
+            .alignItems(VerticalAlign.Center)
+            .padding(10)
           }
           .onClick(() => { //去运动常识详情
             //通过当前对象的上下文对象Context的getRouter()放法获取系统自带路由对象router
@@ -153,11 +165,10 @@ export default struct Home { //导出,以便其它组件导入复用
               .getRouter()
               .pushUrl({ url: 'pages/common/MyDetail', params: { title: '运动常识', jsonstr: JSON.stringify(item) } })
           })
-          .height('58%')
+          .height(146)
           .align(Alignment.Start)
           .backgroundColor(Color.White)
           .borderRadius(8)
-          .padding({ right: 100 })
         }) //for
       }
       .width('94%')
